@@ -14,6 +14,7 @@ import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.marker.Marker;
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
+import de.fhpotsdam.unfolding.providers.AbstractMapTileProvider;
 import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
@@ -33,12 +34,17 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFLINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true;
 	
 	// Less than this threshold is a light earthquake
 	public static final float THRESHOLD_MODERATE = 5;
 	// Less than this threshold is a minor earthquake
 	public static final float THRESHOLD_LIGHT = 4;
+	
+	// Marker Colors
+    private final int YELLOW = color(255, 255, 0);
+    private final int ORANGE = color(255, 125, 0);
+    private final int RED = color(255, 0, 0);
 
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -52,18 +58,12 @@ public class EarthquakeCityMap extends PApplet {
 	
 	public void setup() {
 		size(950, 600, OPENGL);
-
-		if (offline) {
-		    map = new UnfoldingMap(this, 200, 50, 700, 500, new MBTilesMapProvider(mbTilesString));
-		    earthquakesURL = "2.5_week.atom"; 	// Same feed, saved Aug 7, 2015, for working offline
-		}
-		else {
-			map = new UnfoldingMap(this, 200, 50, 700, 500, new Google.GoogleMapProvider());
-			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
-			//earthquakesURL = "2.5_week.atom";
-		}
+		
+	    map = new UnfoldingMap(this, 50, 50, 850, 500, (offline ? new MBTilesMapProvider(mbTilesString) : new Google.GoogleMapProvider()));
+	    // earthquakesURL = "2.5_week.atom"; 	// Same feed, saved Aug 7, 2015, for working offline
 		
 	    map.zoomToLevel(2);
+	    map.setBackgroundColor(5);
 	    MapUtils.createDefaultEventDispatcher(this, map);	
 			
 	    // The List you will populate with new SimplePointMarkers
@@ -77,8 +77,10 @@ public class EarthquakeCityMap extends PApplet {
 	    // to create a new SimplePointMarker for each PointFeature in 
 	    // earthquakes.  Then add each new SimplePointMarker to the 
 	    // List markers (so that it will be added to the map in the line below)
-	    
-	    
+	    for (PointFeature earthquake : earthquakes) {
+	        markers.add(createMarker(earthquake));
+	    }
+	    	    
 	    // Add the markers to the map so that they are displayed
 	    map.addMarkers(markers);
 	}
@@ -107,7 +109,6 @@ public class EarthquakeCityMap extends PApplet {
 		
 		// Here is an example of how to use Processing's color method to generate 
 	    // an int that represents the color yellow.  
-	    int yellow = color(255, 255, 0);
 		
 		// TODO (Step 4): Add code below to style the marker's size and color 
 	    // according to the magnitude of the earthquake.  
@@ -116,7 +117,13 @@ public class EarthquakeCityMap extends PApplet {
 	    // Rather than comparing the magnitude to a number directly, compare 
 	    // the magnitude to these variables (and change their value in the code 
 	    // above if you want to change what you mean by "moderate" and "light")
-	    
+	    if (mag < 4) {
+	        marker.setColor(YELLOW);
+	    } else if (mag < 5) {
+	        marker.setColor(ORANGE);
+	    } else {
+	        marker.setColor(RED);
+	    }
 	    
 	    // Finally return the marker
 	    return marker;
@@ -134,6 +141,31 @@ public class EarthquakeCityMap extends PApplet {
 	private void addKey() 
 	{	
 		// Remember you can use Processing's graphics methods here
-	
+	    fill(255, 255, 255);
+	    stroke(0f);
+	    rect(60, 425, 150, 100, 7);
+	    
+	    textSize(18);
+	    fill(0, 0, 0);
+	    text("Earthquake Key", 67, 445);
+	    
+	    stroke(100f);
+	    textSize(12);
+	    fill(YELLOW);
+	    ellipse(75, 465, 10, 10);
+	    fill(0, 0, 0);
+	    text("Magnitude < 4", 90, 469);
+	    
+        textSize(12);
+        fill(ORANGE);
+        ellipse(75, 485, 10, 10);
+        fill(0, 0, 0);
+        text("Magnitude 4 - 5", 90, 489);
+            
+        textSize(12);
+        fill(this.RED);
+        ellipse(75, 505, 10, 10);
+        fill(0, 0, 0);
+        text("Magnitude > 5", 90, 509);
 	}
 }

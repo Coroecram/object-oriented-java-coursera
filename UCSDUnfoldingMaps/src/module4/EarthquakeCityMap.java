@@ -16,6 +16,7 @@ import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import parsing.ParseFeed;
 import processing.core.PApplet;
+import processing.core.PVector;
 
 /** EarthquakeCityMap
  * An application with an interactive map displaying earthquake data.
@@ -162,7 +163,7 @@ public class EarthquakeCityMap extends PApplet {
 	// set this "country" property already.  Otherwise it returns false.
 	private boolean isLand(PointFeature earthquake) {
 		
-		
+		Boolean landed = false;
 		// Loop over all the country markers.  
 		// For each, check if the earthquake PointFeature is in the 
 		// country in m.  Notice that isInCountry takes a PointFeature
@@ -170,12 +171,14 @@ public class EarthquakeCityMap extends PApplet {
 		// If isInCountry ever returns true, isLand should return true.
 		for (Marker m : countryMarkers) {
 			// TODO: Finish this method using the helper method isInCountry
-			
+			if (isInCountry(earthquake, m)) {
+			    landed = true;
+			}
 		}
 		
 		
 		// not inside any country
-		return false;
+		return landed;
 	}
 	
 	/* prints countries with number of earthquakes as
@@ -211,7 +214,20 @@ public class EarthquakeCityMap extends PApplet {
 		//      property set.  You can get the country with:
 		//        String country = (String)m.getProperty("country");
 		
-		
+	    int landQuakes = 0;
+	    int cQuakes = 0;
+	    for (Marker cm : countryMarkers) {
+	        if (cm.getProperty("earthquakes") != null) {
+	            cQuakes = ((ArrayList<PointFeature>) cm.getProperty("earthquakes")).size();
+	        } else {
+	            cQuakes = 0;
+	        }
+	        landQuakes += cQuakes;
+	        System.out.println((String) cm.getProperty("name") + " had " + cQuakes + " earthquakes.");
+	    }
+	    
+	    int seaQuakes = this.quakeMarkers.size() - landQuakes;
+	    System.out.println("Seaquakes: " + seaQuakes);
 	}
 	
 	
@@ -234,7 +250,12 @@ public class EarthquakeCityMap extends PApplet {
 				// checking if inside
 				if(((AbstractShapeMarker)marker).isInsideByLocation(checkLoc)) {
 					earthquake.addProperty("country", country.getProperty("name"));
-						
+					if (country.getProperty("earthquakes") == null) {
+					    country.setProperty("earthquakes", new ArrayList<PointFeature>());					    
+					}
+					ArrayList<PointFeature> earthquakes = (ArrayList<PointFeature>) country.getProperty("earthquakes");
+                    earthquakes.add(earthquake);
+                    
 					// return if is inside one
 					return true;
 				}

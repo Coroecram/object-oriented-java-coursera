@@ -10,9 +10,9 @@ import processing.core.PGraphics;
  *
  */
 public class LandQuakeMarker extends EarthquakeMarker {
-	
-	
-	public LandQuakeMarker(PointFeature quake) {
+
+
+    public LandQuakeMarker(PointFeature quake) {
 		
 		// calling EarthquakeMarker constructor
 		super(quake);
@@ -33,7 +33,11 @@ public class LandQuakeMarker extends EarthquakeMarker {
 		// and how it is set in the EarthquakeMarker constructor
 		
 		// TODO: Implement this method
-		
+	      pg.pushStyle();
+
+	        pg.arc(x, y, getRadius(), getRadius(), 0, (float) (2*Math.PI));
+	        
+	        pg.popStyle();
 	}
 	
 

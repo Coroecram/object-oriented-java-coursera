@@ -127,7 +127,6 @@ public class EarthquakeCityMap extends PApplet {
 		background(0);
 		map.draw();
 		addKey();
-		
 	}
 	
 	// helper method to draw key in GUI
@@ -219,11 +218,11 @@ public class EarthquakeCityMap extends PApplet {
 	    for (Marker cm : countryMarkers) {
 	        if (cm.getProperty("earthquakes") != null) {
 	            cQuakes = ((ArrayList<PointFeature>) cm.getProperty("earthquakes")).size();
+	            System.out.println((String) cm.getProperty("name") + ": had " + cQuakes + " earthquakes.");
 	        } else {
 	            cQuakes = 0;
 	        }
 	        landQuakes += cQuakes;
-	        System.out.println((String) cm.getProperty("name") + " had " + cQuakes + " earthquakes.");
 	    }
 	    
 	    int seaQuakes = this.quakeMarkers.size() - landQuakes;
@@ -249,13 +248,8 @@ public class EarthquakeCityMap extends PApplet {
 					
 				// checking if inside
 				if(((AbstractShapeMarker)marker).isInsideByLocation(checkLoc)) {
-					earthquake.addProperty("country", country.getProperty("name"));
-					if (country.getProperty("earthquakes") == null) {
-					    country.setProperty("earthquakes", new ArrayList<PointFeature>());					    
-					}
-					ArrayList<PointFeature> earthquakes = (ArrayList<PointFeature>) country.getProperty("earthquakes");
-                    earthquakes.add(earthquake);
-                    
+					addEarthquakeToLoc(country, earthquake);                   
+					
 					// return if is inside one
 					return true;
 				}
@@ -265,10 +259,20 @@ public class EarthquakeCityMap extends PApplet {
 		// check if inside country represented by SimplePolygonMarker
 		else if(((AbstractShapeMarker)country).isInsideByLocation(checkLoc)) {
 			earthquake.addProperty("country", country.getProperty("name"));
-			
+			addEarthquakeToLoc(country, earthquake);
 			return true;
 		}
 		return false;
+	}
+
+
+	private void addEarthquakeToLoc(Marker country, PointFeature earthquake) {
+		earthquake.addProperty("country", country.getProperty("name"));
+		if (country.getProperty("earthquakes") == null) {
+		    country.setProperty("earthquakes", new ArrayList<PointFeature>());
+		}
+		ArrayList<PointFeature> earthquakes = (ArrayList<PointFeature>) country.getProperty("earthquakes");
+        earthquakes.add(earthquake);	
 	}
 
 }

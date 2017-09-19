@@ -1,0 +1,23 @@
+INDEX VERSION 1.126+/home/michael/Documents/object-oriented-java-coursera/.metadata/.plugins/org.eclipse.jdt.core
+63479062.index
+2064907913.index
+954478507.index
+726145421.index
+1453598739.index
+1279675953.index
+3305932411.index
+353243283.index
+4201408329.index
+2913048097.index
+2460879720.index
+3832095003.index
+3506120572.index
+3693448964.index
+1225813827.index
+2031085872.index
+3433604322.index
+553399779.index
+382364349.index
+1595360142.index
+2017629745.index
+207581026.index

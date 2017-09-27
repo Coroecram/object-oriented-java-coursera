@@ -35,7 +35,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true;
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -133,10 +133,12 @@ public class EarthquakeCityMap extends PApplet {
 		if (lastSelected != null) {
 			lastSelected.setSelected(false);
 			lastSelected = null;
-		
 		}
+		
 		selectMarkerIfHover(quakeMarkers);
-		selectMarkerIfHover(cityMarkers);
+		if (lastSelected == null) {
+			selectMarkerIfHover(cityMarkers);
+		}
 	}
 	
 	// If there is a marker under the cursor, and lastSelected is null 
@@ -145,7 +147,13 @@ public class EarthquakeCityMap extends PApplet {
 	// 
 	private void selectMarkerIfHover(List<Marker> markers)
 	{
-		// TODO: Implement this method
+		for (Marker marker : markers) {
+			if(marker.isInside(this.map, mouseX, mouseY)) {
+				marker.setSelected(true);
+				lastSelected = (CommonMarker) marker;
+				break;
+			}
+		}
 	}
 	
 	/** The event handler for mouse clicks

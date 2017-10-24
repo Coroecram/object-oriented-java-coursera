@@ -164,12 +164,58 @@ public class EarthquakeCityMap extends PApplet {
 	@Override
 	public void mouseClicked()
 	{
-		// TODO: Implement this method
-		// Hint: You probably want a helper method or two to keep this code
-		// from getting too long/disorganized
+		// clear the last selection
+		if (lastClicked != null) {
+			lastClicked.setClicked(false);
+			lastClicked = null;
+		}
+		
+		selectMarkerIfClick(quakeMarkers);
+		if (lastClicked == null) {
+			selectMarkerIfClick(cityMarkers);
+		}
+		
 	}
 	
 	
+	private void selectMarkerIfClick(List<Marker> markers) {
+		for (Marker marker : markers) {
+			marker.setHidden(false);
+			if(marker.isInside(this.map, mouseX, mouseY)) {
+				((CommonMarker) marker).setClicked(true);
+				lastClicked = (CommonMarker) marker;
+			}else {
+				((CommonMarker) marker).setClicked(false);
+			}
+		}
+		if(lastClicked != null) {
+			hideIrrelevant();
+		}
+	}
+
+
+	private void hideIrrelevant() {
+		for (Marker city : cityMarkers) {
+			if (lastClicked instanceof EarthquakeMarker) {
+				if(((EarthquakeMarker) lastClicked).threatCircle() < lastClicked.getDistanceTo(city.getLocation())) {
+					city.setHidden(true);
+				}
+			} else {	
+				city.setHidden(true);
+			}
+		}
+		for (Marker quake : quakeMarkers) {
+			if (lastClicked instanceof CityMarker) {
+				if(((EarthquakeMarker) quake).threatCircle() < lastClicked.getDistanceTo(quake.getLocation())) {
+					quake.setHidden(true);
+				}
+			} else {
+				quake.setHidden(true);
+			}
+		}
+		lastClicked.setHidden(false);
+	}
+
 	// loop over and unhide all markers
 	private void unhideMarkers() {
 		for(Marker marker : quakeMarkers) {
